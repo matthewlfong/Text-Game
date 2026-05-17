@@ -107,6 +107,9 @@ while True:
             for item in inventory:
                 if items[item]["type"] == "weapon":
                     weapon_damage = max(weapon_damage, items[item]["value"])
+            
+            if enemy is None:
+                continue
 
             if choice == "1":
                 print("You attack!")
@@ -117,11 +120,13 @@ while True:
                 if enemy_hp <= 0:
                     print("You defeated the enemy!")
                     game_state = "exploration"
+                    enemy = None
+                    continue
 
-                else:
-                    damage = max(0, enemies[enemy]["damage"] - armor_value)
-                    health -= damage
-                    print("Enemy hits you for", damage)
+            if game_state == "combat" and enemy is not None:
+                damage = max(0, enemies[enemy]["damage"] - armor_value)
+                health -= damage
+                print("Enemy hits you for", damage)
 
             elif choice == "2":
                 print("You ran away!")
@@ -133,14 +138,18 @@ while True:
                 if len(potions) == 0:
                     print("No potions!")
                 else:
-                    potion = potions[0]
-                    heal_amount = items[potion]["value"]
+                    print("Choose potion:")
+                    for i, p in enumerate(potions):
+                        print(i + 1, p)
 
+                    pick = int(input("> ")) - 1
+                    potion = potions[pick]
+                    
+                    heal_amount = items[potion]["value"]
                     health += heal_amount
                     inventory.remove(potion)
 
                     print("You used", potion, "and healed", heal_amount)
-
 
         if health <= 0: 
             print("You died!")
