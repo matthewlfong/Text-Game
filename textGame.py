@@ -1,29 +1,53 @@
 import random
+import os
 
 #helper function for status
 def show_status(health, inventory):
     print("\n" + "-"*20)
     print("Health:", health)
     print("Inventory:", inventory)
+    print("Weapon:", equipment["weapon"])
+    print("Armor:", equipment["armor"])
     print("-"*20 + "\n")
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
 
 #dictionary of items
 items = {
+    # ===== POTIONS =====
     "small potion": {"type": "heal", "value": 15},
     "medium potion": {"type": "heal", "value": 30},
     "large potion": {"type": "heal", "value": 70},
-    "blazing sword": {"type": "weapon", "value": 50},
+
+    # ===== WEAPONS (basic) =====
+    "stick": {"type": "weapon", "value": 5},
+    "knife": {"type": "weapon", "value": 10},
+    "club": {"type": "weapon", "value": 12},
     "sword": {"type": "weapon", "value": 20},
     "spear": {"type": "weapon", "value": 25},
-    "club": {"type": "weapon", "value": 10},
-    "stick": {"type": "weapon", "value": 5},
-    "knife": {"type": "weapon", "value": 15},
+
+    # ===== WEAPONS (advanced) =====
+    "longsword": {"type": "weapon", "value": 35},
+    "blazing sword": {"type": "weapon", "value": 50},
+    "dragon blade": {"type": "weapon", "value": 80},
+
+    # ===== ARMOR (light) =====
+    "leather armor": {"type": "armor", "value": 5},
+    "cloth robe": {"type": "armor", "value": 3},
+
+    # ===== ARMOR (medium) =====
+    "chain armor": {"type": "armor", "value": 10},
+    "scale armor": {"type": "armor", "value": 15},
+
+    # ===== ARMOR (heavy) =====
+    "plate armor": {"type": "armor", "value": 20},
+    "dragon armor": {"type": "armor", "value": 50},
+
+    # ===== SPELLS (future-ready) =====
     "fireball": {"type": "spell", "value": 20},
     "lightning": {"type": "spell", "value": 20},
-    "leather armor": {"type": "armor", "value": 5},
-    "chain armor": {"type": "armor", "value": 10},
-    "plate armor": {"type": "armor", "value": 20},
-    "dragon armor": {"type": "armor", "value": 50}
+    "ice shard": {"type": "spell", "value": 18}
 }
 
 #dictionary of enemies
@@ -36,14 +60,19 @@ enemies = {
     "bandit": {"hp": 60, "damage": 12}
 }
 
-enemies_list = ["slime", "goblin", "bandit"]
-items_list = ["small potion", "sword", "stick"]
+enemies_list = ["slime", "goblin", "bandit", "orc"]
+items_list = ["small potion", "medium potion", "stick", "knife", "club", "sword", "leather armor"]
 
 while True:
     inventory = ["stick", "leather armor", "small potion"] #starting items and values
     health = 100
     game_over = False
     game_state = "exploration"
+    
+    equipment = {
+    "weapon": "stick",
+    "armor": "leather armor"
+    }
 
     print("Welcome to your adventure!\n")
 
@@ -55,10 +84,12 @@ while True:
     while not game_over:
         #exploration mode
         if game_state == "exploration":
+            clear()
             print("\nYou are wandering...")
 
             print("1. Explore")
             print("2. Check status")
+            print("3. Inventory / Equip")
 
             choice = input()
 
@@ -85,6 +116,52 @@ while True:
 
             elif choice == "2":
                 show_status(health, inventory)
+            
+            elif choice == "3":
+                print("\nInventory:")
+                for i, item in enumerate(inventory):
+                    print(i + 1, item)
+
+                print("\n1. Equip weapon")
+                print("2. Equip armor")
+                print("3. Unequip weapon")
+                print("4. Unequip armor")
+
+                sub = input()
+
+                if sub == "1":
+                    weapons = [i for i in inventory if items[i]["type"] == "weapon"]
+
+                    if len(weapons) == 0:
+                        print("No weapons available.")
+                    else:
+                        for i, w in enumerate(weapons):
+                            print(i + 1, w)
+
+                        pick = int(input("> ")) - 1
+                        equipment["weapon"] = weapons[pick]
+                        print("Equipped", weapons[pick])
+                
+                elif sub == "2":
+                    armors = [i for i in inventory if items[i]["type"] == "armor"]
+
+                    if len(armors) == 0:
+                        print("No armor available.")
+                    else:
+                        for i, a in enumerate(armors):
+                            print(i + 1, a)
+
+                        pick = int(input("> ")) - 1
+                        equipment["armor"] = armors[pick]
+                        print("Equipped", armors[pick])
+
+                elif sub == "3":
+                    equipment["weapon"] = None
+                    print("Weapon unequipped.")
+
+                elif sub == "4":
+                    equipment["armor"] = None
+                    print("Armor unequipped.")
         
         #combat mode
         elif game_state == "combat":
@@ -98,15 +175,13 @@ while True:
 
             #ARMOR CALC 
             armor_value = 0
-            for item in inventory:
-                if items[item]["type"] == "armor":
-                    armor_value = max(armor_value, items[item]["value"])
+            if equipment["armor"]:
+                armor_value = items[equipment["armor"]]["value"]
 
             #WEAPON CALC
-            weapon_damage = 5
-            for item in inventory:
-                if items[item]["type"] == "weapon":
-                    weapon_damage = max(weapon_damage, items[item]["value"])
+            weapon_damage = 2
+            if equipment["weapon"]:
+                weapon_damage = items[equipment["weapon"]]["value"]
             
             if enemy is None:
                 continue
@@ -142,7 +217,7 @@ while True:
                     for i, p in enumerate(potions):
                         print(i + 1, p)
 
-                    pick = int(input("> ")) - 1
+                    pick = int(input()) - 1
                     potion = potions[pick]
                     
                     heal_amount = items[potion]["value"]
@@ -161,5 +236,3 @@ while True:
     
     
         
-
-
