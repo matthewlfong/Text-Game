@@ -69,6 +69,7 @@ while True:
 
                 if event == "enemy":
                     enemy = random.choice(enemies_list)
+                    enemy_hp = enemies[enemy]["hp"]
                     print(f"A hostile {enemy} appears!")
 
                     game_state = "combat"
