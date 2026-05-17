@@ -1,5 +1,4 @@
 import random
-import os
 
 #helper function for status
 def show_status(health, inventory):
@@ -9,9 +8,6 @@ def show_status(health, inventory):
     print("Weapon:", equipment["weapon"])
     print("Armor:", equipment["armor"])
     print("-"*20 + "\n")
-
-def clear():
-    os.system("cls" if os.name == "nt" else "clear")
 
 #dictionary of items
 items = {
